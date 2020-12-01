@@ -41,7 +41,7 @@ browserPromise
     let waitAndClickPromise = waitAndClick("#base-card-1-link") 
     return waitAndClickPromise;
   })
-  .then(function(){
+  .then(function(data){
       let waitAndClickPromise = waitAndClick('a[data-attr1="warmup"]');
       return waitAndClickPromise;
   })
@@ -60,7 +60,7 @@ browserPromise
           return clickPromise;
         })
         .then(function(){
-          resolve();
+          resolve("hey");
         })
         .catch(function(error){
           reject(error);
