@@ -37,7 +37,7 @@ function parseData(html){
 }
 
 //module.exports =  {
-//   getAllMatches : getAllMatches
+//   getAllMatches : getAllMatches,
 // }
 
 
