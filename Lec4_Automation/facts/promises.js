@@ -1,6 +1,7 @@
 let fs = require("fs");
 
-     //B        =       // A
+
+//B        =       // A
 let f1KaPromise =  fs.promises.readFile("./f1.txt");
 
 console.log(f1KaPromise);
