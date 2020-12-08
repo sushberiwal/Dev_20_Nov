@@ -5,6 +5,8 @@ const puppeteer = require("puppeteer");
 // puppeteer => pending promise
 
 let gTab;
+let gIdx;
+let gCode;
 
 // to open a browser
 let browserOpenPromise = puppeteer.launch({
@@ -41,23 +43,13 @@ browserOpenPromise
   })
   // click => navigation => click
   .then(function(){
-      let waitPromise = gTab.waitForSelector("#base-card-1-link" , {visible:true}) //max 30 sec wait
-      return waitPromise;
-  })
-  .then(function(){ 
-      // next page => click
-      let ipKitClickedPromise = gTab.click("#base-card-1-link");
-      return ipKitClickedPromise;
+    let waitAndClickPromise = waitAndClick("#base-card-1-link");
+    return waitAndClickPromise;
   })
   .then(function(){
-    let waitPromise = gTab.waitForSelector("#base-card-1-link" , {visible:true}) //max 30 sec wait
-    return waitPromise;
+    let waitAndClickPromise = waitAndClick("#base-card-1-link");
+    return waitAndClickPromise;
   })
-  .then(function(){ 
-    // next page => click
-    let warmupClickedPromise = gTab.click("#base-card-1-link");
-    return warmupClickedPromise;
-})
   .then(function(){
       let waitPromise = gTab.waitForSelector(".js-track-click.challenge-list-item" , {visible:true});
       return waitPromise;
@@ -89,9 +81,101 @@ browserOpenPromise
         completeLinks.push(completeLink);
     }
     console.log(completeLinks);
-
+    let oneQuestionSolvePromise = solveQuestion(completeLinks[0]);
+    return oneQuestionSolvePromise;
+  })
+  .then(function(){
+    console.log("One Question solved Succesfully !!!!");
   })
   .catch(function (error) {
     console.log(error);
   });
 // catch ka function => failed callback
+
+
+function waitAndClick(selector){
+  return new Promise(function(resolve , reject){
+    let waitPromise = gTab.waitForSelector(selector , {visible:true});
+    waitPromise.then(function(){
+      let clickPromise = gTab.click(selector);
+      return clickPromise;
+    })
+    .then(function(){
+      resolve();
+    })
+    .catch(function(error){
+      reject(error);
+    })
+  })
+}
+
+
+function getCode(){
+  return new Promise( function(resolve , reject){
+    let waitPromise = gTab.waitForSelector(".hackdown-content h3" , {visible:true});
+    waitPromise.then(function(){
+      let allCodeNamesElementsPromise = gTab.$$(".hackdown-content h3");
+      return allCodeNamesElementsPromise;
+    })
+    .then(function(allCodeNamesElements){
+      // [ <h3>C++</h3> , <h3>Java</h3> , <h3>Python</h3>];
+      //let allCodeNamesPromise = [  Promise<pending> , Promise<pending> , Promise<pending> ];
+      let allCodeNamesPromise = [];
+      for(let i=0 ; i<allCodeNamesElements.length ; i++){
+        let namePromise = gTab.evaluate( function(elem){ return elem.textContent;  } , allCodeNamesElements[i] );
+        allCodeNamesPromise.push(namePromise);
+      }
+      let promiseOfAllCodesNames = Promise.all(allCodeNamesPromise);
+      return promiseOfAllCodesNames;
+    })
+    .then(function(codeNames){
+       //[C++ , Java , Python];
+       let idx;
+       for(let i=0 ; i<codeNames.length ; i++){
+         if(codeNames[i] == "C++"){
+           idx = i;
+           break;
+         }
+       }
+       gIdx = idx;
+       let allCodeElementsPromise = gTab.$$(".hackdown-content .highlight");
+       return allCodeElementsPromise;
+    })
+    .then(function(allCodeElements){
+      // [<div> </div> , <div> </div> , <div> </div>  ]
+      let codeDiv = allCodeElements[gIdx];
+      let codePromise = gTab.evaluate( function(elem){  return elem.textContent; }  , codeDiv)
+      return codePromise;
+    })
+    .then(function(code){
+      // console.log(code);
+      gCode = code;
+      resolve();
+    })
+    .catch(function(error){
+      reject(error);
+    })
+  });
+}
+
+function solveQuestion(quesLink){
+  return new Promise( function(resolve , reject){
+    let quesGotoPromise = gTab.goto(quesLink);
+    quesGotoPromise.then(function(){
+      let waitAndClickPromise = waitAndClick('div[data-attr2="Editorial"]');
+      return waitAndClickPromise;
+    })
+    .then(function(){
+      let codePromise = getCode();
+      return codePromise;
+    })
+    .then(function(){
+      console.log("Got Code !!");
+    })
+    .catch(function(error){
+      reject(error);
+    })
+
+
+  });
+}
