@@ -6,7 +6,7 @@ const puppeteer = require("puppeteer");
 
 let gTab;
 let gIdx;
-let gCode;
+let gCode; 
 
 // to open a browser
 let browserOpenPromise = puppeteer.launch({
@@ -24,6 +24,7 @@ browserOpenPromise
   .then(function (pages) {
     // pages => array => [page]
     let tab = pages[0];
+    
     gTab = tab;
     let pageOpenPromise = tab.goto("https://www.hackerrank.com/auth/login"); // goto => by default delay
     return pageOpenPromise;
@@ -70,7 +71,6 @@ browserOpenPromise
     return pendingPromiseOfAllLinks; // Promise<pending>
   })
   .then(function(allLinks){
-      console.log(allLinks);
       //https://www.hackerrank.com
     //   let completeLinks = allLinks.map( function(link){
     //       return `https://www.hackerrank.com${link}`;
@@ -81,11 +81,19 @@ browserOpenPromise
         completeLinks.push(completeLink);
     }
     console.log(completeLinks);
-    let oneQuestionSolvePromise = solveQuestion(completeLinks[0]);
-    return oneQuestionSolvePromise;
+
+    let firstQuesSolvePromise = solveQuestion(completeLinks[0]);
+
+    for(let i=1 ; i<completeLinks.length ; i++){
+      firsQuesSolvePromise = firstQuesSolvePromise.then(function(){
+        let nextQuesSolvePromise = solveQuestion(completeLinks[i]);
+        return nextQuesSolvePromise;
+      })
+    }
+    return firstQuesSolvePromise;
   })
   .then(function(){
-    console.log("One Question solved Succesfully !!!!");
+    console.log("All Questions solved Succesfully !!!!");
   })
   .catch(function (error) {
     console.log(error);
@@ -158,6 +166,77 @@ function getCode(){
   });
 }
 
+
+
+function pasteCode(){
+  return new Promise(function(resolve , reject){
+    let problemTabClickedPromise = gTab.click('div[data-attr2="Problem"]');
+    problemTabClickedPromise.then(function(){
+      let waitAndClickPromise = waitAndClick('.custom-input-checkbox');
+      return waitAndClickPromise;
+    })
+    .then(function(){
+      let codeTypedPromise = gTab.type(".custominput" , gCode);
+      return codeTypedPromise;
+    })
+    .then(function(){
+      let ctrlKeyDownPromise = gTab.keyboard.down("Control");
+      return ctrlKeyDownPromise;
+    })
+    .then(function(){
+      let aKeyPressedP = gTab.keyboard.press("A");
+      return aKeyPressedP;
+    })
+    .then(function(){
+      let xKeyPressedP = gTab.keyboard.press("X");
+      return xKeyPressedP;
+    })
+    .then(function(){
+      let clickedOnCodeBoxPromise = gTab.click(".monaco-scrollable-element.editor-scrollable.vs");
+      return clickedOnCodeBoxPromise;
+    })
+    .then(function(){
+      let aKeyPressedP = gTab.keyboard.press("A");
+      return aKeyPressedP;
+    })
+    .then(function(){
+      let vKeyPressedP = gTab.keyboard.press("V");
+      return vKeyPressedP;
+    })
+    .then(function(){
+      let ctrlKeyUpPromise = gTab.keyboard.up("Control");
+      return ctrlKeyUpPromise;
+    })
+    .then(function(){
+      let codeSubmitPromise = gTab.click('.pull-right.btn.btn-primary.hr-monaco-submit');
+      return codeSubmitPromise;
+    }).then(function(){
+      resolve();
+    })
+    .catch(function(error){
+      reject(error);
+    })
+
+  })
+}
+
+
+function handleLockBtn(){
+  return new Promise(function(resolve , reject){
+    let waitAndClickPromise = waitAndClick('.ui-btn.ui-btn-normal.ui-btn-primary.ui-btn-styled');
+    waitAndClickPromise.then(function(){
+      //lock btn found
+      console.log("lock button found !!");
+      resolve();
+    })
+    .catch(function(error){
+      // lock btn not found
+      console.log("lock button not found !!");
+      resolve();
+    })
+  })
+}
+
 function solveQuestion(quesLink){
   return new Promise( function(resolve , reject){
     let quesGotoPromise = gTab.goto(quesLink);
@@ -166,11 +245,19 @@ function solveQuestion(quesLink){
       return waitAndClickPromise;
     })
     .then(function(){
+      let lockBtnPromise = handleLockBtn();
+      return lockBtnPromise;
+    })
+    .then(function(){
       let codePromise = getCode();
       return codePromise;
     })
     .then(function(){
-      console.log("Got Code !!");
+      let codePastedPromise = pasteCode();
+      return codePastedPromise;
+    })
+    .then(function(){
+      resolve();
     })
     .catch(function(error){
       reject(error);
