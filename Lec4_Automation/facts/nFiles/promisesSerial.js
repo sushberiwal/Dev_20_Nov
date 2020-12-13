@@ -13,7 +13,3 @@ for(let i=1 ; i<files.length ; i++){
         return nextFilePromise;
     })
 }
-
-f1KaPromise.then(function(data){
-    console.log(data+"");
-})

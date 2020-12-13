@@ -1,5 +1,5 @@
-const id = "yexerax364@5y5u.com";
-const pw = "123456789";
+const id = "pamico3332@nic58.com";
+const pw = "12345678";
 
 const puppeteer = require("puppeteer");
 // puppeteer => pending promise
@@ -85,7 +85,7 @@ browserOpenPromise
     let firstQuesSolvePromise = solveQuestion(completeLinks[0]);
 
     for(let i=1 ; i<completeLinks.length ; i++){
-      firsQuesSolvePromise = firstQuesSolvePromise.then(function(){
+      firstQuesSolvePromise = firstQuesSolvePromise.then(function(){
         let nextQuesSolvePromise = solveQuestion(completeLinks[i]);
         return nextQuesSolvePromise;
       })
@@ -223,8 +223,16 @@ function pasteCode(){
 
 function handleLockBtn(){
   return new Promise(function(resolve , reject){
-    let waitAndClickPromise = waitAndClick('.ui-btn.ui-btn-normal.ui-btn-primary.ui-btn-styled');
-    waitAndClickPromise.then(function(){
+    let waitPromise = gTab.waitForSelector('.ui-btn.ui-btn-normal.ui-btn-primary.ui-btn-styled' , {visible:true , timeout:5000});
+    waitPromise.then(function(){
+      let mouseMovePromise = gTab.mouse.move(10,10);
+      return mouseMovePromise;
+    })
+    .then(function(){
+      let clickPromise = gTab.click('.ui-btn.ui-btn-normal.ui-btn-primary.ui-btn-styled');
+      return clickPromise;
+    })
+    .then(function(){
       //lock btn found
       console.log("lock button found !!");
       resolve();
