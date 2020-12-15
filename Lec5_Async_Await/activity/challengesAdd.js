@@ -28,7 +28,7 @@ const challenges = require("./challenges");
           await tab.waitForSelector('div[data-analytics="NavBarProfileDropDown"]' , {visible:true});
           await tab.click('div[data-analytics="NavBarProfileDropDown"]');
 
-          await Promise.all( [ tab.waitForNavigation() , tab.click('a[data-analytics="NavBarProfileDropDownAdministration"]') ] );
+          await Promise.all( [ tab.waitForNavigation({waitUntil:"domcontentloaded"}) , tab.click('a[data-analytics="NavBarProfileDropDownAdministration"]') ] );
 
           await tab.waitForSelector('.nav-tabs.nav.admin-tabbed-nav li' , {visible:true});
           let bothLis = await tab.$$('.nav-tabs.nav.admin-tabbed-nav li');
@@ -40,10 +40,11 @@ const challenges = require("./challenges");
           let createChallenge = await tab.$('.btn.btn-green.backbone.pull-right'); // document.querySelector
           let createChallengeLink = await tab.evaluate( function(elem){  return elem.getAttribute('href');   }   , createChallenge);
           createChallengeLink = `https://www.hackerrank.com${createChallengeLink}`;
-
-
-
-          await addChallenges(challenges[0] , browser , createChallengeLink);
+          
+          
+          for(let i=0 ; i<challenges.length ; i++){
+              await addChallenges(challenges[i] , browser , createChallengeLink);
+          }
 
     }
     catch(error){
@@ -84,6 +85,6 @@ async function addChallenges(challenge , browser , link){
     await newTab.type("#tags_tag" , tags);
     await newTab.keyboard.press("Enter");
     await newTab.click('.save-challenge.btn.btn-green');
-    // await newTab.close();
+    await newTab.close();
 }
 
