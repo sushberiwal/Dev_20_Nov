@@ -4,6 +4,8 @@
 // npm i electron
 // in package.json file under scripts add "start":"electron ."
 
+// npm i ejs-electron
+
 // electron logic
 
 // object destructuring
