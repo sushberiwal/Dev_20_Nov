@@ -8,7 +8,7 @@
 
 // object destructuring
 const { app, BrowserWindow } = require('electron')
-
+const ejse = require("ejs-electron");
 
 // const electron = require("electron");
 // const app = electron.app;
@@ -24,7 +24,7 @@ const win = new BrowserWindow({
     }
   });
 
-  win.loadFile('index.html').then(function(){
+  win.loadFile('index.ejs').then(function(){
       win.maximize();
       win.webContents.openDevTools();
   })
