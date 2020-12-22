@@ -54,9 +54,6 @@ $(document).ready(function () {
           }
     }
   });
-
-
-
   $(".content").on("scroll" , function(){
 
     let top = $(this).scrollTop();
@@ -68,6 +65,36 @@ $(document).ready(function () {
 
   })
 
+
+  $(".cell").on("keyup" , function(){
+    console.log("keyup");
+    let height = $(this).height();
+    let id = $(this).attr("rowid");
+    // left col wo wala div uthaunga jjiski cellid == rowid
+    $(`.left-col-cell[cellid=${id}]`).height(height);
+
+  })
+
+
+// file and home pe click event attached
+  $(".file , .home").on("click" , function(){
+    let menu = $(this).text();
+    if(menu == "File"){
+      $(".file").addClass("active");
+      $(".file-menu-options").removeClass("hide");
+      $(".home-menu-options").addClass("hide");
+      $(".home").removeClass("active");
+      
+    }
+    else{
+      // menu == "Home"
+      $(".file").removeClass("active");
+      $(".file-menu-options").addClass("hide");
+      $(".home").addClass("active");
+      $(".home-menu-options").removeClass("hide");
+
+    }
+  })
 
   function deleteFormula(cellObject){
     $("#formula").val("");
