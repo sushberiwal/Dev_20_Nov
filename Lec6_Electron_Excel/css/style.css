@@ -20,9 +20,50 @@
     height: 35px;
 }
 
-.cells{
+.content{
     height: calc(100vh - 155px);
     overflow: auto;
+    position: relative;
+}
+
+.cells{
+    position: absolute;
+    left: 30px;
+    top: 25px;
+}
+
+.top-left-cell{
+    background: lightgray;
+    width: 30px;
+    height: 25px;
+}
+
+.top-row{
+    display: flex;
+    position: absolute;
+    left: 30px;
+    top: 0px;
+}
+
+
+.top-row-cell{
+    border: 1px solid;
+    min-width: 70px;
+    min-height: 25px;
+    text-align: center;
+    background: lightgreen;
+}
+
+.left-col{
+
+}
+
+.left-col-cell{
+    height: 25px;
+    border: 1px solid;
+    width: 30px;
+    background: lightgreen;
+    text-align: center;
 }
 
 .row{
