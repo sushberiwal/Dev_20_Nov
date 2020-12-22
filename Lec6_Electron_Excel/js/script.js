@@ -6,6 +6,7 @@ $(document).ready(function () {
   let lsc;
 
   $(".cell").on("click", function () {
+    // console.log(db);
     // console.log(this);
     let rowId = Number($(this).attr("rowid"));
     let colId = Number($(this).attr("colid"));
@@ -27,8 +28,9 @@ $(document).ready(function () {
     let cellObject = db[rowId][colId];
     if (value != cellObject.value) {
       cellObject.value = value;
+      // when cell is dependent on formula and then a value is given to that cell from ui then the existing formula should be deleted !!
+      deleteFormula(cellObject);
       updateChildrens(cellObject);
-      // console.log(db);
     }
   });
 
@@ -41,15 +43,36 @@ $(document).ready(function () {
         let colId = $(lsc).attr("colid");
         let cellObject = db[rowId][colId];
         if(cellObject.formula != formula){
-            let value = solveFormula(formula , cellObject);
-            // db update
-            cellObject.value = value;
-            cellObject.formula = formula;
-            // ui update
-            $(lsc).text(value);
-        }
+          deleteFormula(cellObject);
+          let value = solveFormula(formula , cellObject);
+          // db update
+          cellObject.value = value;
+          cellObject.formula = formula;
+          // ui update
+          $(lsc).text(value);
+          updateChildrens(cellObject);
+          }
     }
   });
+
+
+  function deleteFormula(cellObject){
+    $("#formula").val("");
+    cellObject.formula = "";
+    for(let i=0 ; i<cellObject.parents.length ; i++){
+      // A1
+      let {rowId , colId} = getRowIdColIdFromAddress(cellObject.parents[i]);
+      let parentCellObject = db[rowId][colId];
+      let childrensOfParents = parentCellObject.childrens;
+      //[ "" , "" , "B1" , "" ,"" ,"" ];
+      let filteredChildrens = childrensOfParents.filter(  function(child){
+        return child != cellObject.name;
+      });
+
+      parentCellObject.childrens = filteredChildrens;
+    }
+    cellObject.parents = [];
+  }
 
   function updateChildrens(cellObject){
       // ["B1" , "C1" , "Z1"];
@@ -78,9 +101,11 @@ $(document).ready(function () {
         let { rowId, colId } = getRowIdColIdFromAddress(comp);
         // A1
         let cellObject = db[rowId][colId];
-        // add self to childrens only first time
         if(selfCellObject){
+          // add self to childrens only first time
             cellObject.childrens.push(selfCellObject.name);
+            // add parents
+            selfCellObject.parents.push(cellObject.name);
         }
 
         let value = cellObject.value;
@@ -114,7 +139,8 @@ $(document).ready(function () {
           name: name,
           value: "",
           formula:"",
-          childrens:[]
+          childrens:[],
+          parents:[]
         };
         row.push(cellObject);
       }
