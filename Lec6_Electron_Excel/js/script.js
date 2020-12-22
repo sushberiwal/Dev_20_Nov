@@ -56,6 +56,19 @@ $(document).ready(function () {
   });
 
 
+
+  $(".content").on("scroll" , function(){
+
+    let top = $(this).scrollTop();
+    let left = $(this).scrollLeft();
+    // console.log(top , left);
+     
+    $(".top-row , .top-left-cell").css("top" , top+"px");
+    $(".left-col , .top-left-cell").css("left" , left+"px");
+
+  })
+
+
   function deleteFormula(cellObject){
     $("#formula").val("");
     cellObject.formula = "";
