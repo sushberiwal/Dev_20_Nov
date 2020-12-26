@@ -22,7 +22,8 @@ const win = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
-      nodeIntegration: true // node enable
+      nodeIntegration: true, // node enable
+      enableRemoteModule:true
     }
   });
 

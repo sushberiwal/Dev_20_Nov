@@ -1,5 +1,18 @@
 let $ = require("jquery"); // dom manipulation
 
+let remote = require("electron").remote;
+let dialog = remote.dialog;
+let path = require("path");
+// let fs = remote.require('fs');
+
+// let fs = window.require("fs");
+
+let fs = require("fs");
+// var remote = require('electron').remote;
+// var electronFs = remote.require('fs');
+// var electronDialog = remote.dialog;
+
+
 $(document).ready(function () {
   // console.log("document is loaded !!!");
   let db;
@@ -64,8 +77,6 @@ $(document).ready(function () {
     $(".left-col , .top-left-cell").css("left" , left+"px");
 
   })
-
-
   $(".cell").on("keyup" , function(){
     console.log("keyup");
     let height = $(this).height();
@@ -73,6 +84,37 @@ $(document).ready(function () {
     // left col wo wala div uthaunga jjiski cellid == rowid
     $(`.left-col-cell[cellid=${id}]`).height(height);
 
+  })
+
+
+  // new open save
+
+  $('.new').on("click" , function(){
+    console.log("New button is clicked !!");
+    // DB empty ya new
+    initDB(); // 2600 times 
+    // UI New  
+    initUI();
+  })
+
+  $('.open').on("click" , function(){
+    console.log("Open button is clicked !!");
+    console.log(db);
+  })
+
+  $('.save').on("click" , function(){
+    // console.log("Save button is clicked !!");
+    // let path = dialog.showSaveDialogSync();
+    // console.log(path);
+    // let filePath = __dirname;
+    // fs.writeFileSync(path , JSON.stringify(db));
+    // fs.writeFileSync("../myDb.txt" ,JSON.stringify(db) );
+
+    let filePath = __dirname;
+    filePath = path.join(filePath,"myDb.txt");
+    console.log(filePath);
+
+    fs.writeFileSync( filePath , "alsjkfnjaksf");
   })
 
 
@@ -164,6 +206,17 @@ $(document).ready(function () {
     return {
         rowId : rowId,
         colId : colId
+    }
+  }
+
+
+  function initUI(){
+    let cells = $(".cell");
+    let count=0;
+    for(let i=0 ; i<cells.length ; i++){
+      $(cells[i]).text("");
+      console.log(count);
+      count++;
     }
   }
 
