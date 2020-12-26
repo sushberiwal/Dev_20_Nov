@@ -125,7 +125,7 @@
     height: 100%;
 }
 .sheet{
-    margin-left: 10px;
+    /* margin-left: 10px; */
     cursor: pointer;
     min-width: 70px;
     border-right: 1px solid lightgray;

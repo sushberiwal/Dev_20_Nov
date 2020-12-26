@@ -3,12 +3,11 @@ let fs = require("fs");
 let remote = require("electron").remote;
 let dialog = remote.dialog;
 
-
-
 $(document).ready(function () {
   // console.log("document is loaded !!!");
   let db;
   let lsc;
+  let sheetsDB = [];
   $(".cell").on("click", function () {
     // console.log(db);
     // console.log(this);
@@ -40,115 +39,139 @@ $(document).ready(function () {
     let formula = $(this).val();
     // console.log(formula);
     // falsy values => null , undefined , false , 0 , ""
-    if(formula) {
-        let rowId = $(lsc).attr("rowid");
-        let colId = $(lsc).attr("colid");
-        let cellObject = db[rowId][colId];
-        if(cellObject.formula != formula){
-          deleteFormula(cellObject);
-          let value = solveFormula(formula , cellObject);
-          // db update
-          cellObject.value = value;
-          cellObject.formula = formula;
-          // ui update
-          $(lsc).text(value);
-          updateChildrens(cellObject);
-          }
+    if (formula) {
+      let rowId = $(lsc).attr("rowid");
+      let colId = $(lsc).attr("colid");
+      let cellObject = db[rowId][colId];
+      if (cellObject.formula != formula) {
+        deleteFormula(cellObject);
+        let value = solveFormula(formula, cellObject);
+        // db update
+        cellObject.value = value;
+        cellObject.formula = formula;
+        // ui update
+        $(lsc).text(value);
+        updateChildrens(cellObject);
+      }
     }
   });
-  $(".content").on("scroll" , function(){
-
+  $(".content").on("scroll", function () {
     let top = $(this).scrollTop();
     let left = $(this).scrollLeft();
     // console.log(top , left);
-     
-    $(".top-row , .top-left-cell").css("top" , top+"px");
-    $(".left-col , .top-left-cell").css("left" , left+"px");
 
-  })
-  $(".cell").on("keyup" , function(){
+    $(".top-row , .top-left-cell").css("top", top + "px");
+    $(".left-col , .top-left-cell").css("left", left + "px");
+  });
+  $(".cell").on("keyup", function () {
     console.log("keyup");
     let height = $(this).height();
     let id = $(this).attr("rowid");
     // left col wo wala div uthaunga jjiski cellid == rowid
     $(`.left-col-cell[cellid=${id}]`).height(height);
-
-  })
-
+  });
 
   // new open save
-  $('.new').on("click" , function(){
+  $(".new").on("click", function () {
     console.log("New button is clicked !!");
     // DB empty ya new
-    initDB(); // 2600 times 
-    // UI New  
+    initDB(); // 2600 times
+    // UI New
     initUI();
-  })
-  $('.open').on("click" , function(){
+  });
+  $(".open").on("click", function () {
     let path = dialog.showOpenDialogSync();
     console.log(path);
     let openedDB = fs.readFileSync(path[0]);
     db = JSON.parse(openedDB);
     // UI set hojae according to DB
     setUI();
-})
-  $('.save').on("click" , function(){
+  });
+  $(".save").on("click", function () {
     console.log("Save button is clicked !!");
     let path = dialog.showSaveDialogSync();
     // console.log(path);
     // let filePath = __dirname;
-    if(path){
-      fs.writeFileSync(path , JSON.stringify(db));
+    if (path) {
+      fs.writeFileSync(path, JSON.stringify(db));
       alert("File Saved !!");
-    }
-    else{
+    } else {
       alert("No File Selected !!");
     }
-  })
-
+  });
 
   // sheets-add
-  let sheetid=0;
-  $(".sheet-add").on("click" , function(){
+  let sheetid = 0;
+  $(".sheet-add").on("click", function () {
+    // active sheet thi waha se active-sheet wali class hata do
+    $(".active-sheet").removeClass("active-sheet");
     console.log("sheet add clicked !!");
     sheetid++;
-    let sheet = `<div class="sheet" sid="${sheetid}">Sheet ${sheetid+1}</div>`;
+
+    // ek div bnao with class sheet and active-sheet
+    let sheet = `<div class="sheet active-sheet" sid="${sheetid}">Sheet ${sheetid + 1}</div>`;
+
+    // sheet ko append krdo sheet list me
     $(".sheets-list").append(sheet);
-  })
 
+    // abhi abhi jo sheet append kri hai uspe click event laga do
+    $(".active-sheet").on("click", function () {
+      if(!$(this).hasClass("active-sheet")){
+        // console.log("sheet clicked !!");
+        $(".active-sheet").removeClass("active-sheet");
+        $(this).addClass("active-sheet");
+         // db change hona chahie
+        let sheetId = $(this).attr("sid");
+        db = sheetsDB[sheetId];
+        // ui set hona chahe
+        setUI();
+      }
+    });
 
-// file and home pe click event attached
-  $(".file , .home").on("click" , function(){
+    initDB();
+    initUI();
+    console.log(sheetsDB);
+  });
+
+  $(".sheet").on("click", function () {
+    if(!$(this).hasClass("active-sheet")){
+      $(".active-sheet").removeClass("active-sheet");
+      $(this).addClass("active-sheet");
+      let sheetId = $(this).attr("sid");
+      // db change hona chahie
+      db = sheetsDB[sheetId];
+      // ui set hona chahe
+      setUI();
+    }
+  });
+
+  // file and home pe click event attached
+  $(".file , .home").on("click", function () {
     let menu = $(this).text();
-    if(menu == "File"){
+    if (menu == "File") {
       $(".file").addClass("active");
       $(".file-menu-options").removeClass("hide");
       $(".home-menu-options").addClass("hide");
       $(".home").removeClass("active");
-      
-    }
-    else{
+    } else {
       // menu == "Home"
       $(".file").removeClass("active");
       $(".file-menu-options").addClass("hide");
       $(".home").addClass("active");
       $(".home-menu-options").removeClass("hide");
-
     }
-  })
+  });
 
-
-
-  function deleteFormula(cellObject){
+  function deleteFormula(cellObject) {
     $("#formula").val("");
     cellObject.formula = "";
-    for(let i=0 ; i<cellObject.parents.length ; i++){
+    for (let i = 0; i < cellObject.parents.length; i++) {
       // A1
-      let {rowId , colId} = getRowIdColIdFromAddress(cellObject.parents[i]);
+      let { rowId, colId } = getRowIdColIdFromAddress(cellObject.parents[i]);
       let parentCellObject = db[rowId][colId];
       let childrensOfParents = parentCellObject.childrens;
       //[ "" , "" , "B1" , "" ,"" ,"" ];
-      let filteredChildrens = childrensOfParents.filter(  function(child){
+      let filteredChildrens = childrensOfParents.filter(function (child) {
         return child != cellObject.name;
       });
 
@@ -156,40 +179,43 @@ $(document).ready(function () {
     }
     cellObject.parents = [];
   }
-  function updateChildrens(cellObject){
-      // ["B1" , "C1" , "Z1"];
-    for(let i=0 ; i<cellObject.childrens.length ; i++){
-        //B1 => rowId , colId 
-        let {rowId , colId} = getRowIdColIdFromAddress(cellObject.childrens[i]);
-        let childrenCellObject = db[rowId][colId];
-        let value = solveFormula(childrenCellObject.formula);
-        childrenCellObject.value = value;
-        // Ui update ????????????
-        // div[rowid="0"][colid="1"]
-        $(`div[rowid=${rowId}][colid=${colId}]`).text(value);
-        updateChildrens(childrenCellObject);
+  function updateChildrens(cellObject) {
+    // ["B1" , "C1" , "Z1"];
+    for (let i = 0; i < cellObject.childrens.length; i++) {
+      //B1 => rowId , colId
+      let { rowId, colId } = getRowIdColIdFromAddress(cellObject.childrens[i]);
+      let childrenCellObject = db[rowId][colId];
+      let value = solveFormula(childrenCellObject.formula);
+      childrenCellObject.value = value;
+      // Ui update ????????????
+      // div[rowid="0"][colid="1"]
+      $(`div[rowid=${rowId}][colid=${colId}]`).text(value);
+      updateChildrens(childrenCellObject);
     }
   }
-  function solveFormula(formula , selfCellObject) {
+  function solveFormula(formula, selfCellObject) {
     // ( 10 + 20 )
     let fComps = formula.split(" ");
     //[ "(" , "A1" , "+" , "A2" , ")" ];
     for (let i = 0; i < fComps.length; i++) {
       let comp = fComps[i];
       let firstCharacter = comp[0];
-      if ((firstCharacter >= "A" && firstCharacter <= "Z") ||(firstCharacter >= "a" && firstCharacter <= "z")) {
+      if (
+        (firstCharacter >= "A" && firstCharacter <= "Z") ||
+        (firstCharacter >= "a" && firstCharacter <= "z")
+      ) {
         let { rowId, colId } = getRowIdColIdFromAddress(comp);
         // A1
         let cellObject = db[rowId][colId];
-        if(selfCellObject){
+        if (selfCellObject) {
           // add self to childrens only first time
-            cellObject.childrens.push(selfCellObject.name);
-            // add parents
-            selfCellObject.parents.push(cellObject.name);
+          cellObject.childrens.push(selfCellObject.name);
+          // add parents
+          selfCellObject.parents.push(cellObject.name);
         }
 
         let value = cellObject.value;
-        formula = formula.replace( comp , value );
+        formula = formula.replace(comp, value);
       }
     }
     // formula = ( 10 + 20 ) => infix evaluation
@@ -199,28 +225,28 @@ $(document).ready(function () {
 
   // utility functions
   function getRowIdColIdFromAddress(address) {
-    let colId =address.charCodeAt(0) <= 90? address.charCodeAt(0) - 65 : address.charCodeAt(0) - 97;
+    let colId =
+      address.charCodeAt(0) <= 90
+        ? address.charCodeAt(0) - 65
+        : address.charCodeAt(0) - 97;
     let rowId = Number(address.substring(1)) - 1;
     return {
-        rowId : rowId,
-        colId : colId
-    }
+      rowId: rowId,
+      colId: colId,
+    };
   }
-  function setUI(){
-    for(let i=0;i<100 ; i++){
-      for(let j=0 ; j<26 ; j++){
+  function setUI() {
+    for (let i = 0; i < 100; i++) {
+      for (let j = 0; j < 26; j++) {
         let cellObject = db[i][j];
         $(`div[rowid="${i}"][colid="${j}"]`).text(cellObject.value);
       }
     }
   }
-  function initUI(){
+  function initUI() {
     let cells = $(".cell");
-    let count=0;
-    for(let i=0 ; i<cells.length ; i++){
+    for (let i = 0; i < cells.length; i++) {
       $(cells[i]).text("");
-      console.log(count);
-      count++;
     }
   }
   function initDB() {
@@ -234,15 +260,16 @@ $(document).ready(function () {
         let cellObject = {
           name: name,
           value: "",
-          formula:"",
-          childrens:[],
-          parents:[]
+          formula: "",
+          childrens: [],
+          parents: [],
         };
         row.push(cellObject);
       }
       db.push(row);
     }
-    console.log(db);
+    // console.log(db);
+    sheetsDB.push(db);
   }
   initDB();
 });
