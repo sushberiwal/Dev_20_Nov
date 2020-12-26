@@ -1,13 +1,16 @@
 let $ = require("jquery"); // dom manipulation
+let fs = require("fs");
+
+// fs.writeFileSync("test.txt" , "testing !!!!");
 
 let remote = require("electron").remote;
+const { setuid } = require("process");
 let dialog = remote.dialog;
-let path = require("path");
+// let path = require("path");
 // let fs = remote.require('fs');
 
 // let fs = window.require("fs");
 
-let fs = require("fs");
 // var remote = require('electron').remote;
 // var electronFs = remote.require('fs');
 // var electronDialog = remote.dialog;
@@ -98,23 +101,26 @@ $(document).ready(function () {
   })
 
   $('.open').on("click" , function(){
-    console.log("Open button is clicked !!");
-    console.log(db);
-  })
+    let path = dialog.showOpenDialogSync();
+    console.log(path);
+    let openedDB = fs.readFileSync(path[0]);
+    db = JSON.parse(openedDB);
+    // UI set hojae according to DB
+    setUI();
+})
 
   $('.save').on("click" , function(){
-    // console.log("Save button is clicked !!");
-    // let path = dialog.showSaveDialogSync();
+    console.log("Save button is clicked !!");
+    let path = dialog.showSaveDialogSync();
     // console.log(path);
     // let filePath = __dirname;
-    // fs.writeFileSync(path , JSON.stringify(db));
-    // fs.writeFileSync("../myDb.txt" ,JSON.stringify(db) );
-
-    let filePath = __dirname;
-    filePath = path.join(filePath,"myDb.txt");
-    console.log(filePath);
-
-    fs.writeFileSync( filePath , "alsjkfnjaksf");
+    if(path){
+      fs.writeFileSync(path , JSON.stringify(db));
+      alert("File Saved !!");
+    }
+    else{
+      alert("No File Selected !!");
+    }
   })
 
 
@@ -209,6 +215,14 @@ $(document).ready(function () {
     }
   }
 
+  function setUI(){
+    for(let i=0;i<100 ; i++){
+      for(let j=0 ; j<26 ; j++){
+        let cellObject = db[i][j];
+        $(`div[rowid="${i}"][colid="${j}"]`).text(cellObject.value);
+      }
+    }
+  }
 
   function initUI(){
     let cells = $(".cell");
