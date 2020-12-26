@@ -1,26 +1,14 @@
 let $ = require("jquery"); // dom manipulation
 let fs = require("fs");
-
-// fs.writeFileSync("test.txt" , "testing !!!!");
-
 let remote = require("electron").remote;
-const { setuid } = require("process");
 let dialog = remote.dialog;
-// let path = require("path");
-// let fs = remote.require('fs');
 
-// let fs = window.require("fs");
-
-// var remote = require('electron').remote;
-// var electronFs = remote.require('fs');
-// var electronDialog = remote.dialog;
 
 
 $(document).ready(function () {
   // console.log("document is loaded !!!");
   let db;
   let lsc;
-
   $(".cell").on("click", function () {
     // console.log(db);
     // console.log(this);
@@ -35,7 +23,6 @@ $(document).ready(function () {
     // console.log(address);
     $("#address").val(address);
   });
-
   $(".cell").on("blur", function () {
     lsc = this;
     let rowId = $(this).attr("rowid");
@@ -49,7 +36,6 @@ $(document).ready(function () {
       updateChildrens(cellObject);
     }
   });
-
   $("#formula").on("blur", function () {
     let formula = $(this).val();
     // console.log(formula);
@@ -91,7 +77,6 @@ $(document).ready(function () {
 
 
   // new open save
-
   $('.new').on("click" , function(){
     console.log("New button is clicked !!");
     // DB empty ya new
@@ -99,7 +84,6 @@ $(document).ready(function () {
     // UI New  
     initUI();
   })
-
   $('.open').on("click" , function(){
     let path = dialog.showOpenDialogSync();
     console.log(path);
@@ -108,7 +92,6 @@ $(document).ready(function () {
     // UI set hojae according to DB
     setUI();
 })
-
   $('.save').on("click" , function(){
     console.log("Save button is clicked !!");
     let path = dialog.showSaveDialogSync();
@@ -121,6 +104,16 @@ $(document).ready(function () {
     else{
       alert("No File Selected !!");
     }
+  })
+
+
+  // sheets-add
+  let sheetid=0;
+  $(".sheet-add").on("click" , function(){
+    console.log("sheet add clicked !!");
+    sheetid++;
+    let sheet = `<div class="sheet" sid="${sheetid}">Sheet ${sheetid+1}</div>`;
+    $(".sheets-list").append(sheet);
   })
 
 
@@ -144,6 +137,8 @@ $(document).ready(function () {
     }
   })
 
+
+
   function deleteFormula(cellObject){
     $("#formula").val("");
     cellObject.formula = "";
@@ -161,7 +156,6 @@ $(document).ready(function () {
     }
     cellObject.parents = [];
   }
-
   function updateChildrens(cellObject){
       // ["B1" , "C1" , "Z1"];
     for(let i=0 ; i<cellObject.childrens.length ; i++){
@@ -176,8 +170,6 @@ $(document).ready(function () {
         updateChildrens(childrenCellObject);
     }
   }
-
-
   function solveFormula(formula , selfCellObject) {
     // ( 10 + 20 )
     let fComps = formula.split(" ");
@@ -214,7 +206,6 @@ $(document).ready(function () {
         colId : colId
     }
   }
-
   function setUI(){
     for(let i=0;i<100 ; i++){
       for(let j=0 ; j<26 ; j++){
@@ -223,7 +214,6 @@ $(document).ready(function () {
       }
     }
   }
-
   function initUI(){
     let cells = $(".cell");
     let count=0;
@@ -233,7 +223,6 @@ $(document).ready(function () {
       count++;
     }
   }
-
   function initDB() {
     db = [];
     for (let i = 0; i < 100; i++) {

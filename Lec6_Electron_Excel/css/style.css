@@ -2,6 +2,7 @@
     box-sizing: border-box;
     margin: 0px;
     padding: 0px;
+    font-family: 'Roboto', sans-serif;
 }
 
 
@@ -114,8 +115,30 @@
 }
 
 .sheets{
-    border: 1px solid blue;
     height: 35px;
+    display: flex;
+    align-items: center;
+}
+
+.sheets-list{
+    display: flex;
+    height: 100%;
+}
+.sheet{
+    margin-left: 10px;
+    cursor: pointer;
+    min-width: 70px;
+    border-right: 1px solid lightgray;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.sheet-add{
+    margin-left: 10px;
+}
+.fas{
+    color: lightgreen;
+    font-size: 25px;
 }
 
 .hide{
@@ -125,4 +148,8 @@
     background: lightgreen;
     color: white;
     border-radius: 25px;
+}
+.active-sheet{
+    background: lightgreen;
+    color: white;
 }
