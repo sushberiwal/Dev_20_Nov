@@ -22,7 +22,43 @@
             <div class="open">Open</div>
             <div class="save">Save</div>
         </div>
-        <div class="home-menu-options hide">Home Menu Options</div>
+        <div class="home-menu-options hide">
+            <div class="home-menu one">
+                <select name="font" id="font-select">
+                    <option value="Monospace">Monospace</option>
+                    <option value="Monospace">Monospace</option>
+                    <option value="Monospace">Monospace</option>
+                    <option value="Monospace">Monospace</option>
+                    <option value="Monospace">Monospace</option>
+                </select>
+                <div class="font-styles">
+                   <button class="bold">B</button>
+                   <button class="underline">U</button>
+                   <button class="italic">I</button>
+                </div>
+            </div>
+            <div class="home-menu two">
+                <select name="font-size" id="font-size">
+                    <option value="12">12</option>
+                    <option value="14">14</option>
+                    <option value="16">16</option>
+                    <option value="18">18</option>
+                    <option value="20">20</option>
+                    <option value="22">22</option>
+                </select>
+                <div class="font-color">
+                    <input type="color" id="cell-font-color">
+                    <input type="color" id="cell-color">
+                </div>
+            </div>
+            <div class="home-menu three">
+                <div class="font-alignment">
+                    <button class="left">L</button>
+                    <button class="center">C</button>
+                    <button class="right">R</button>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="formula">
         <input type="text" id="address" disabled>

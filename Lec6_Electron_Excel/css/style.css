@@ -46,6 +46,7 @@
     height: 50px;
     display: flex;
     align-items: center;
+    border-bottom: 1px solid lightgray;
 }
 
 .formula{
@@ -140,10 +141,6 @@
     color: lightgreen;
     font-size: 25px;
 }
-
-.hide{
-    display: none;
-}
 .active{
     background: lightgreen;
     color: white;
@@ -152,4 +149,53 @@
 .active-sheet{
     background: lightgreen;
     color: white;
+}
+.home-menu-options{
+    display: flex;
+    /* border-bottom: 1px solid lightgray; */
+    /* background: aqua; */
+    width: 40%;
+    justify-content: space-around;
+    height: 100%;
+}
+.home-menu{
+    width: 110px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+}
+.one select{
+    width: 100%;
+}
+.font-styles{
+    display: flex;
+    justify-content: space-around;
+}
+.font-styles button{
+    width: 35px;
+}
+
+.two select{
+    width: 82%;
+}
+.font-color{
+
+}
+.font-color input{
+
+}
+
+.three{
+
+}
+.font-alignment{
+
+}
+.font-alignment button{
+    width: 33px;
+}
+
+.hide{
+    display: none;
 }
