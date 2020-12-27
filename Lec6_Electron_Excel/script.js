@@ -128,6 +128,47 @@ $(document).ready(function () {
     }
   })
 
+  // inputs => change event
+  $("#cell-font-color").on("change" , function(){
+   // cell ka font color change hojana chahie
+   let color = $(this).val();
+   console.log(color);
+   let rowId = $(lsc).attr("rowid");
+    let colId = $(lsc).attr("colid");
+    let cellObject = db[rowId][colId];
+   $(lsc).css("color",color);
+   cellObject.fontColor = color;
+  })
+
+  $("#cell-color").on("change" , function(){
+    // cell ka background change hojana chahie
+    let color = $(this).val();
+    console.log(color);
+    let rowId = $(lsc).attr("rowid");
+    let colId = $(lsc).attr("colid");
+    let cellObject = db[rowId][colId];
+    $(lsc).css("background" , color);
+    cellObject.fontBackground = color;
+
+  })
+
+
+
+  $("#font-size").on("change" , function(){
+    let fontSize = $(this).val();
+    let rowId = $(lsc).attr("rowid");
+    let colId = $(lsc).attr("colid");
+    let cellObject = db[rowId][colId];
+    $(lsc).css("font-size" , fontSize+"px");
+    cellObject.fontSize = fontSize;
+    // adjust height of corresponding left col 
+  })
+
+
+
+
+
+
 
   $(".font-alignment button").on("click" , function(){
     let button = $(this).text();
@@ -313,7 +354,10 @@ $(document).ready(function () {
           childrens: [],
           parents: [],
           fontStyles:{bold:false , italic:false , underline:false},
-          fontAlignment:"left"
+          fontAlignment:"left",
+          fontSize:"16",
+          fontColor:"black",
+          fontBackground:"white"
         };
         row.push(cellObject);
       }
