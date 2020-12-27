@@ -330,13 +330,29 @@ $(document).ready(function () {
       for (let j = 0; j < 26; j++) {
         let cellObject = db[i][j];
         $(`div[rowid="${i}"][colid="${j}"]`).text(cellObject.value);
+        // css set honi chahie
+        // db se ui ki css sync me aaye
+        // fontStyles:{bold:false , italic:false , underline:false},
+        // fontAlignment:"left",
+        // fontSize:"16",
+        // fontColor:"black",
+        // fontBackground:"white"
+        $(`div[rowid="${i}"][colid="${j}"]`).css("font-weight" , cellObject.fontStyles.bold ? "bold":"normal");
+        $(`div[rowid="${i}"][colid="${j}"]`).css("font-style" , cellObject.fontStyles.italic ? "italic":"normal" );
+        $(`div[rowid="${i}"][colid="${j}"]`).css("text-decoration" , cellObject.fontStyles.underline ? "underline":"none");
+        $(`div[rowid="${i}"][colid="${j}"]`).css("text-align" , cellObject.fontAlignment);
+        $(`div[rowid="${i}"][colid="${j}"]`).css("font-size" , cellObject.fontSize+"px");
+        $(`div[rowid="${i}"][colid="${j}"]`).css("color" , cellObject.fontColor);
+        $(`div[rowid="${i}"][colid="${j}"]`).css("background" , cellObject.fontBackground);
       }
     }
   }
   function initUI() {
     let cells = $(".cell");
     for (let i = 0; i < cells.length; i++) {
-      $(cells[i]).text("");
+      $(cells[i]).html("");
+      $(cells[i]).removeAttr("style");
+      // 
     }
   }
   function initDB() {
