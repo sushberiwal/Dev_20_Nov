@@ -1,7 +1,8 @@
 let $ = require("jquery"); // dom manipulation
 let fs = require("fs");
-let remote = require("electron").remote;
-let dialog = remote.dialog;
+let dialog = require("electron").remote.dialog;
+
+
 
 $(document).ready(function () {
   // console.log("document is loaded !!!");
@@ -99,6 +100,54 @@ $(document).ready(function () {
       alert("No File Selected !!");
     }
   });
+
+
+
+  // bold // underline // italic
+  $(".font-styles button").on("click" , function(){
+    let button = $(this).text();
+    console.log(`clicked on ${button}`);
+    let rowId = $(lsc).attr("rowid");
+    let colId = $(lsc).attr("colid");
+    let cellObject = db[rowId][colId];
+    if(button == "B"){
+      // pehle se bold ho cell to unbold hojae
+      $(lsc).css("font-weight" , cellObject.fontStyles.bold ? "normal" : "bold");
+      
+      cellObject.fontStyles.bold = !cellObject.fontStyles.bold;
+    }
+    else if(button == "U"){
+      // pehle se underline to underline hata do
+      $(lsc).css("text-decoration" , cellObject.fontStyles.underline ? "none":"underline");
+      cellObject.fontStyles.underline = !cellObject.fontStyles.underline;
+    }
+    else{
+      // pehle se italic ho to unitalic hojae
+      $(lsc).css("font-style" , cellObject.fontStyles.italic ? "normal":"italic");
+      cellObject.fontStyles.italic = !cellObject.fontStyles.italic;
+    }
+  })
+
+
+  $(".font-alignment button").on("click" , function(){
+    let button = $(this).text();
+    // console.log(`clicked on ${button}`);
+    let rowId = $(lsc).attr("rowid");
+    let colId = $(lsc).attr("colid");
+    let cellObject = db[rowId][colId];
+    if(button == "L"){
+      $(lsc).css("text-align" , "left");
+      cellObject.fontAlignment = "left";
+    }
+    else if(button == "C"){
+      $(lsc).css("text-align" , "center");
+      cellObject.fontAlignment = "center";
+    }
+    else{
+      $(lsc).css("text-align" , "right");
+      cellObject.fontAlignment = "right";
+    }
+  })
 
   // sheets-add
   let sheetid = 0;
@@ -263,6 +312,8 @@ $(document).ready(function () {
           formula: "",
           childrens: [],
           parents: [],
+          fontStyles:{bold:false , italic:false , underline:false},
+          fontAlignment:"left"
         };
         row.push(cellObject);
       }
